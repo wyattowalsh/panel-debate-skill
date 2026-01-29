@@ -1,12 +1,34 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.png">
+  <img alt="panel-skill banner" src="assets/banner-dark.png">
+</picture>
+
+<div align="center">
+
 # panel-skill
 
-Expert panel discussions for complex decisions. Claude becomes 3-7 domain experts who debate, challenge each other, and synthesize actionable recommendations.
+**Expert panel discussions for complex decisions**
+
+Claude becomes 3-7 domain experts who debate, challenge each other, and synthesize actionable recommendations through [Hegelian dialectic](#philosophical-foundations).
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Research-Backed](https://img.shields.io/badge/Research-Backed-green.svg)](#research-foundations)
+
+[Install](#install) • [Usage](#usage) • [How It Works](#how-it-works) • [Research](#research-foundations)
+
+</div>
+
+---
 
 ## Install
 
 ```bash
 npx skills add wyattowalsh/panel-skill
 ```
+
+> [!TIP]
+> After installation, the `/panel` command becomes available in Claude Code.
 
 ## Usage
 
@@ -18,13 +40,21 @@ npx skills add wyattowalsh/panel-skill
 
 ### Options
 
-| Option | Values | Default |
-|--------|--------|---------|
-| `size` | 3-7 | auto (based on topic breadth) |
-| `depth` | quick / standard / deep | standard |
-| `style` | collaborative / adversarial / academic | collaborative |
+| Option | Values | Default | Description |
+|:-------|:-------|:--------|:------------|
+| `size` | `3`-`7` | auto | Number of experts (auto-scales with topic breadth) |
+| `depth` | `quick` / `standard` / `deep` | `standard` | Discussion rounds: 1 / 2-3 / 4+ |
+| `style` | `collaborative` / `adversarial` / `academic` | `collaborative` | Panel interaction tone |
 
-## Example
+> [!NOTE]
+> Low-complexity topics (e.g., "What port does PostgreSQL use?") trigger a warning—multi-agent debate adds overhead without benefit for simple questions.
+
+---
+
+## Example Output
+
+<details open>
+<summary><strong>📋 Microservices Migration Panel</strong></summary>
 
 ```
 ╭─ Panel Discussion: Microservices Migration ───────────────╮
@@ -49,102 +79,145 @@ npx skills add wyattowalsh/panel-skill
    • Agreement: Team capability matters more than architecture choice
    • Tension: Invest in microservices now vs. extract services later
    • Open question: What are our actual scaling bottlenecks?
+
+╭───────────────────────────────────────────────────────────╮
+│ [1] Continue  [2] Follow-up  [3] Redirect  [4] Conclude   │
+╰───────────────────────────────────────────────────────────╯
 ```
+
+</details>
+
+---
 
 ## How It Works
 
 ```mermaid
-flowchart LR
-    A[Topic] --> B[Assess Complexity]
-    B --> C[Generate Diverse Experts]
-    C --> D[Debate]
-    D --> E{Converged?}
-    E -->|Stalled| F[Adjust Panel]
-    F --> D
-    E -->|Yes| G[Synthesize]
-    G --> H[Recommendations]
+flowchart TB
+    subgraph Input
+        A[🎯 Topic]
+    end
+
+    subgraph Validation
+        B{Complexity<br/>Score}
+        B -->|5-7: Low| C[⚠️ Warn User]
+        C --> D{Proceed?}
+        D -->|No| E[Direct Answer]
+        D -->|Yes| F
+        B -->|8-15| F[✓ Continue]
+    end
+
+    subgraph Panel["Panel Assembly"]
+        F --> G[Generate Experts]
+        G --> H{Diversity<br/>≥60?}
+        H -->|No| G
+        H -->|Yes| I[🎭 Panel Ready]
+    end
+
+    subgraph Discussion
+        I --> J[Round N]
+        J --> K[Cross-Examination]
+        K --> L[🛡️ Contrarian Check]
+        L --> M[📋 Synthesis]
+        M --> N{Converged?}
+        N -->|No| O{Stalled?}
+        O -->|Yes| P[Adjust Panel]
+        P --> J
+        O -->|No| J
+    end
+
+    subgraph Output
+        N -->|Yes| Q[📊 Final Report]
+    end
+
+    A --> B
 ```
 
-The skill screens low-complexity topics (e.g., "What port does PostgreSQL use?") with a warning, since multi-agent debate adds overhead without benefit for simple questions.
+### State Machine
+
+| State | Description | Exit Condition |
+|:------|:------------|:---------------|
+| `COMPLEXITY_CHECK` | Assess if topic warrants panel | Score calculated |
+| `EXPERT_GENERATION` | Create diverse personas | Diversity ≥60 |
+| `DISCUSSION` | Facilitate debate rounds | Convergence or max rounds |
+| `SYNTHESIS` | Generate recommendations | Report complete |
+
+> [!IMPORTANT]
+> Every panel **must** include three archetypes: **Contrarian** (challenges consensus), **Synthesizer** (connects perspectives), and **Specialist** (provides domain depth).
 
 ---
 
 ## Research Foundations
 
-This skill is grounded in peer-reviewed multi-agent debate research. The design synthesizes findings from multiple 2024-2025 publications into actionable principles.
+This skill synthesizes findings from peer-reviewed multi-agent debate research[^1].
 
 ### Core Findings
 
 | Finding | Source | Implementation |
-|---------|--------|----------------|
-| Diversity is the dominant driver of debate quality | [Wu et al. 2025](https://arxiv.org/abs/2511.07784) | Diversity score ≥60 required before proceeding |
-| Majority pressure suppresses independent correction | [Wu et al. 2025](https://arxiv.org/abs/2511.07784) | Contrarian protection protocol |
-| Heterogeneous agents outperform homogeneous | [A-HMAD 2025](https://link.springer.com/article/10.1007/s44443-025-00353-3) | Max 30% same-archetype rule |
-| MAD helps complex tasks, not simple ones | [ICLR 2025 Analysis](https://d2jud02ci9yv69.cloudfront.net/2025-04-28-mad-159/blog/mad/) | Complexity classifier (5-15 scale) |
-| Confidence weighting improves synthesis | [CISC, ACL 2025](https://aclanthology.org/2025.findings-acl.1030/) | Weight positions by expertise + confidence |
-| 3 agents × 2 rounds is effective baseline | [Du et al. ICML 2024](https://arxiv.org/abs/2305.14325) | Default: 4-5 experts, 2-3 rounds |
-| Stability detection improves stopping | [Adaptive MAD 2025](https://arxiv.org/abs/2510.12697) | Early termination + stall detection |
-| Dynamic composition beats static | [A-HMAD 2025](https://link.springer.com/article/10.1007/s44443-025-00353-3) | Mid-discussion panel adjustment |
+|:--------|:-------|:---------------|
+| Diversity is THE dominant driver | Wu et al. 2025[^2] | Diversity score ≥60 required |
+| Majority pressure suppresses correction | Wu et al. 2025[^2] | Contrarian protection protocol |
+| Heterogeneous > homogeneous agents | A-HMAD 2025[^3] | Max 30% same-archetype |
+| MAD helps complex, not simple tasks | ICLR 2025[^4] | Complexity classifier |
+| Confidence weighting improves synthesis | CISC 2025[^5] | Weighted aggregation |
+| 3 agents × 2 rounds is effective | Du et al. 2024[^6] | Default configuration |
 
-### Key Research
+<details>
+<summary><strong>📚 Detailed Research Summaries</strong></summary>
 
-#### Du et al. (ICML 2024) — "Improving Factuality and Reasoning through Multiagent Debate"
+#### Du et al. (ICML 2024)
+> "Improving Factuality and Reasoning through Multiagent Debate"
 
-The foundational paper establishing that multiple LLM instances debating over rounds significantly improves reasoning. Key findings:
+The foundational paper establishing that multiple LLM instances debating over rounds significantly improves reasoning:
 - Cross-examination reduces hallucinations
-- Performance scales with agent count and debate rounds
-- 3 agents × 2 rounds is a cost-effective baseline
+- Performance scales with agent count and rounds
+- 3 agents × 2 rounds is cost-effective baseline
 
-**Link**: https://arxiv.org/abs/2305.14325
+#### Wu et al. (Nov 2025)
+> "Can LLM Agents Really Debate?"
 
-#### Wu et al. (Nov 2025) — "Can LLM Agents Really Debate?"
+Critical analysis revealing **group diversity is THE dominant driver**—more important than speaking order or confidence visibility. Majority pressure suppresses correction, leading to conformity cascades.
 
-Critical analysis revealing that **group diversity is THE dominant driver** of debate quality—more important than structural parameters like speaking order or confidence visibility. Also found that majority pressure suppresses correction, leading to conformity cascades.
+#### A-HMAD (Nov 2025)
+> Adaptive Heterogeneous Multi-Agent Debate
 
-**Implementation**: Required diversity scoring, contrarian protection protocol, explicit dissent solicitation before synthesis.
+Heterogeneous specialized agents significantly outperform homogeneous teams. Simple majority voting underperforms quality-weighted aggregation.
 
-**Link**: https://arxiv.org/abs/2511.07784
+#### CISC (ACL 2025)
+> Confidence Improves Self-Consistency
 
-#### A-HMAD (Nov 2025) — Adaptive Heterogeneous Multi-Agent Debate
+Prioritizing high-confidence reasoning paths reduces required samples by 40%+ while maintaining accuracy.
 
-Demonstrates that heterogeneous specialized agents significantly outperform homogeneous teams. Simple majority voting underperforms quality-weighted aggregation.
-
-**Implementation**: Mandatory archetype heterogeneity (Contrarian + Synthesizer + Specialist), no more than 30% same-archetype, adaptive moderation.
-
-**Link**: https://link.springer.com/article/10.1007/s44443-025-00353-3
-
-#### CISC (ACL 2025) — Confidence Improves Self-Consistency
-
-Shows that prioritizing high-confidence reasoning paths reduces required samples by 40%+ while maintaining accuracy. Confidence signals correlate with correctness.
-
-**Implementation**: Expert confidence signals (high/medium/low), domain expertise weighting, confidence-weighted synthesis.
-
-**Link**: https://aclanthology.org/2025.findings-acl.1030/
+</details>
 
 ### Anti-Patterns Avoided
 
-Research identifies failure modes that this skill actively prevents:
+> [!CAUTION]
+> Research identifies these failure modes—panel-skill actively prevents them:
 
-1. **Conformity Cascade** — LLMs tend toward majority positions, entrenching early errors.
-   *Mitigation*: Required contrarian, explicit disagreement triggers.
-
-2. **Devil's Advocate Overuse** — Pure adversarial debate reduces accuracy.
-   *Mitigation*: Synthesizer required, ~90% collaborative tone.
-
-3. **False Consensus** — Averaging positions loses nuance.
-   *Mitigation*: Context-dependent synthesis, "CONTESTED" labeling when warranted.
-
-4. **Overhead on Simple Tasks** — MAD adds cost without benefit on easy questions.
-   *Mitigation*: Complexity classifier screens topics before spawning panel.
+| Anti-Pattern | Problem | Mitigation |
+|:-------------|:--------|:-----------|
+| **Conformity Cascade** | LLMs drift toward majority, entrenching errors | Required contrarian + disagreement triggers |
+| **Devil's Advocate Overuse** | Pure adversarial debate reduces accuracy | Synthesizer required, ~90% collaborative |
+| **False Consensus** | Averaging positions loses nuance | Context-dependent synthesis, "CONTESTED" labels |
+| **Simple Task Overhead** | MAD adds cost without benefit | Complexity classifier screens topics |
 
 ### Philosophical Foundations
 
 The synthesis mechanism uses **Hegelian dialectic**:
-- **Thesis**: Initial expert position
-- **Antithesis**: Challenging perspective
-- **Synthesis**: Higher-order integration (not compromise, but emergence)
 
-Each round's synthesis becomes the next round's thesis, enabling progressive refinement.
+```mermaid
+flowchart LR
+    T[Thesis<br/><i>Initial position</i>] --> A[Antithesis<br/><i>Challenge</i>]
+    A --> S[Synthesis<br/><i>Emergence</i>]
+    S -.->|"becomes next"| T2[New Thesis]
+
+    style T fill:#4a9eff,color:#fff
+    style A fill:#ff6b6b,color:#fff
+    style S fill:#51cf66,color:#fff
+    style T2 fill:#4a9eff,color:#fff,stroke-dasharray: 5 5
+```
+
+Each round's synthesis becomes the next round's thesis, enabling **progressive refinement** rather than simple compromise.
 
 ---
 
@@ -152,18 +225,60 @@ Each round's synthesis becomes the next round's thesis, enabling progressive ref
 
 ```
 panel-skill/
-├── SKILL.md              # Execution instructions for Claude (~150 lines)
-├── references/           # Deep-dive documentation
+├── SKILL.md              # Entry point (~150 lines)
+├── AGENTS.md             # AI agent instructions
+├── CLAUDE.md             # → symlink to AGENTS.md
+├── references/
 │   ├── research-foundations.md
 │   ├── expert-generation.md
 │   ├── turn-taking.md
 │   ├── synthesis-patterns.md
 │   └── output-formats.md
-└── examples/             # Sample discussions
+└── examples/
+    ├── architecture-decision.md
+    ├── business-strategy.md
+    └── security-implementation.md
 ```
 
-The skill follows **progressive disclosure**: SKILL.md contains lean execution logic; reference files provide depth when needed.
+> [!NOTE]
+> The skill uses **progressive disclosure**: `SKILL.md` contains lean execution logic; reference files are loaded on-demand for depth.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
+
+<details>
+<summary><strong>Quick Test Commands</strong></summary>
+
+```bash
+# Install locally
+npx skills add ./
+
+# Test complexity rejection
+/panel "What port does PostgreSQL use?"
+
+# Test standard panel
+/panel "Redis vs Memcached?"
+
+# Test deep panel
+/panel depth:deep "Microservices migration strategy"
+```
+
+</details>
+
+---
 
 ## License
 
-MIT
+[MIT](LICENSE)
+
+---
+
+[^1]: Full citations in [references/research-foundations.md](references/research-foundations.md)
+[^2]: Wu et al. "Can LLM Agents Really Debate?" [arXiv:2511.07784](https://arxiv.org/abs/2511.07784)
+[^3]: A-HMAD "Adaptive Heterogeneous Multi-Agent Debate" [Springer](https://link.springer.com/article/10.1007/s44443-025-00353-3)
+[^4]: ICLR 2025 MAD Analysis [Blog](https://d2jud02ci9yv69.cloudfront.net/2025-04-28-mad-159/blog/mad/)
+[^5]: CISC "Confidence Improves Self-Consistency" [ACL 2025](https://aclanthology.org/2025.findings-acl.1030/)
+[^6]: Du et al. "Improving Factuality through Multiagent Debate" [arXiv:2305.14325](https://arxiv.org/abs/2305.14325)
