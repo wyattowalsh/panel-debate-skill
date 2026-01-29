@@ -34,24 +34,32 @@ Unlike code-based skills, panel-skill is a **prompt-engineered interaction patte
 panel-skill/
 ├── SKILL.md                      # Main entry point (frontmatter + workflow)
 ├── AGENTS.md                     # This file
+├── README.md                     # User-facing docs with research context
 ├── LICENSE                       # MIT License
 ├── .gitignore                    # Standard gitignore
 ├── references/                   # Supporting pattern documentation
 │   ├── expert-generation.md      # Expert persona generation algorithms
+│   ├── research-foundations.md   # Full research citations
 │   ├── turn-taking.md            # Conversation flow mechanics
 │   ├── synthesis-patterns.md     # Hegelian dialectic synthesis templates
 │   └── output-formats.md         # Terminal output formatting specs
-└── scripts/                      # Optional testing/validation scripts
+├── examples/                     # Sample panel discussions
+│   ├── architecture-decision.md
+│   ├── business-strategy.md
+│   └── security-implementation.md
+└── tests/                        # Testing utilities
+    ├── quality_checklist.md
+    └── test_topics.md
 ```
 
 ### Component Roles
 
 **SKILL.md** (Core Workflow)
-- YAML frontmatter defines skill metadata (name, trigger, description)
-- Markdown body contains step-by-step instructions for Claude (~450 lines)
-- Orchestrates: expert generation → panel discussion → synthesis → output formatting
-- Progressive disclosure: Uses `Read references/X.md` pattern to load detailed algorithms dynamically as needed
-- Self-contained: all critical logic is embedded, with reference files loaded on-demand
+- YAML frontmatter defines skill metadata (name, description)
+- Markdown body contains lean execution directives (~150 lines)
+- Orchestrates: complexity check → expert generation → discussion → synthesis → report
+- Progressive disclosure: References detailed algorithms in `references/` directory
+- Execution-focused: Contains actionable rules, not research explanations
 
 **references/** (Pattern Library)
 - Expert generation algorithms and persona templates
@@ -411,7 +419,7 @@ When revising prompts in SKILL.md:
 ### Pull Request Checklist
 
 - [ ] SKILL.md changes are clear and directive (not vague)
-- [ ] SKILL.md body ≤ 500 lines
+- [ ] SKILL.md body ≤ 200 lines
 - [ ] Reference file loading instructions present
 - [ ] Changes tested with at least 3 different topic types
 - [ ] Reference docs updated if algorithms changed
